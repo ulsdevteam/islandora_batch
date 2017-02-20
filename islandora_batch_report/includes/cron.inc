@@ -33,7 +33,8 @@ function islandora_batch_report_prepare_daily_email_report() {
       islandora_batch_report_get_daily_object_count_by_content_model(1, $timestamp),
       islandora_batch_report_get_daily_object_count_by_content_model(0, $timestamp),
       " " . islandora_batch_get_count_of_queued_sets_ready_to_process(),
-      " " . islandora_batch_get_count_of_queued_objects_ready_to_process()   
+      " " . islandora_batch_get_count_of_queued_objects_ready_to_process()
     );
   }
 }
+
