@@ -54,6 +54,15 @@ function islandora_batch_drush_command() {
         "`--directory` option.",
         'required' => TRUE,
       ),
+      'target' => array(
+        'description' => 'The target to directory or zip file to scan.',
+        'required' => TRUE,
+      ),
+      'assign_pid' => array(
+        'description' => 'The full PID to assign to the object. If this value ' .
+        'is provided, the namespace option is not used.',
+        'value' => 'optional',
+      ),
       'content_models' => array(
         'description' => 'Supports one or multiple comma-separated content ' .
         'models which are all applied to each ingested object.',

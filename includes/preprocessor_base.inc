@@ -114,6 +114,9 @@ abstract class IslandoraBatchPreprocessor {
    *   An id to use in the back-end (Fedora).
    */
   protected function getId(AbstractFedoraObject $object) {
+    if (isset($this->parameters['assign_pid'])) {
+      return $this->parameters['assign_pid'];
+    }
     // Command line argument overrides Collection Policy.
     if (isset($this->parameters['namespace'])) {
       $namespace = $this->parameters['namespace'];
