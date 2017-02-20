@@ -20,15 +20,20 @@ function islandora_batch_report_prepare_daily_email_report() {
   // no need to concatenate " " on each variable.  For output spacing
   // consistency always concatenate " " at the start.
 
-  rules_invoke_event('islandora_batch_report_prepare_daily_report',
-    $timestamp,
-    " " . islandora_batch_report_get_daily_object_count(1, $timestamp),
-    " " . islandora_batch_report_get_daily_object_count(0, $timestamp),
-    " " . islandora_batch_report_get_daily_set_count(1, $timestamp),
-    " " . islandora_batch_report_get_daily_set_count(0, $timestamp),
-    islandora_batch_report_get_daily_object_count_by_content_model(1, $timestamp),
-    islandora_batch_report_get_daily_object_count_by_content_model(0, $timestamp),
-    " " . islandora_batch_get_count_of_queued_sets_ready_to_process(),
-    " " . islandora_batch_get_count_of_queued_objects_ready_to_process()
-  );
+  $objects = islandora_batch_report_get_daily_object_count(1, $timestamp);
+  $sets = islandora_batch_report_get_daily_set_count(1, $timestamp);
+
+  if ($objects || $sets) {
+    rules_invoke_event('islandora_batch_report_prepare_daily_report',
+      $timestamp,
+      " " . $objects,
+      " " . islandora_batch_report_get_daily_object_count(0, $timestamp),
+      " " . $sets,
+      " " . islandora_batch_report_get_daily_set_count(0, $timestamp),
+      islandora_batch_report_get_daily_object_count_by_content_model(1, $timestamp),
+      islandora_batch_report_get_daily_object_count_by_content_model(0, $timestamp),
+      " " . islandora_batch_get_count_of_queued_sets_ready_to_process(),
+      " " . islandora_batch_get_count_of_queued_objects_ready_to_process()   
+    );
+  }
 }
