@@ -527,7 +527,7 @@ EOXML;
     $uri = $this->preprocessorParameters['parent_relationship_uri'];
 
     if ($site) {
-      $this->relationships->add(variable_get('upitt_islandora_memberofsite_namespace'), $site_predicate, $site);
+      $this->relationships->add('http://digital.library.pitt.edu/ontology/relations#', $site_predicate, $site);
     }
     $this->relationships->add($uri, $predicate, $collection);
     $this->addContentModelRelationships();
