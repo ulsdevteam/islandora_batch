@@ -520,12 +520,18 @@ EOXML;
    * Add collection and content model relationships.
    */
   public function addRelationships() {
+    $site = $this->preprocessorParameters['site'];
     $collection = $this->preprocessorParameters['parent'];
     $predicate = $this->preprocessorParameters['parent_relationship_pred'];
+    $site_predicate = $this->preprocessorParameters['site_relationship_pred'];
     $uri = $this->preprocessorParameters['parent_relationship_uri'];
 
+    if ($site) {
+      $this->relationships->add(variable_get('upitt_islandora_memberofsite_namespace'), $site_predicate, $site);
+    }
     $this->relationships->add($uri, $predicate, $collection);
     $this->addContentModelRelationships();
+
     $this->inheritXacmlPolicies();
   }
 

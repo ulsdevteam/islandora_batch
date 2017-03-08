@@ -88,6 +88,15 @@ function islandora_batch_drush_command() {
         'Defaults to namespace specified in Fedora configuration.',
         'value' => 'optional',
       ),
+      'site' => array(
+        'description' => 'The site to which the generated items should ' .
+        'be added.',
+        'value' => 'optional',
+      ),
+      'site_relationship_pred' => array(
+        'description' => 'The predicate of the relationship to the site. ',
+        'value' => 'optional',
+      ),
       'zip_encoding' => array(
         'description' => 'The encoding of filenames contained in ZIP ' .
         'archives:Only relevant with --scan_target=zip. Defaults to the native ' .
@@ -161,6 +170,9 @@ function drush_islandora_batch_scan_preprocess() {
     'parent' => drush_get_option('parent', variable_get('islandora_repository_pid', 'islandora:root')),
     'parent_relationship_uri' => drush_get_option('parent_relationship_uri', 'info:fedora/fedora-system:def/relations-external#'),
     'parent_relationship_pred' => drush_get_option('parent_relationship_pred', 'isMemberOfCollection'),
+    'assign_pid' => drush_get_option('assign_pid', ''),
+    'site' => drush_get_option('site', ''),
+    'site_relationship_pred' => drush_get_option('site_relationship_pred', ''),
     'namespace' => drush_get_option('namespace'),
     'zip_encoding' => drush_get_option('zip_encoding'),
   );
