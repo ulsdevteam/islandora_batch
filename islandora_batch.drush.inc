@@ -67,7 +67,7 @@ function islandora_batch_drush_command() {
         'description' => 'If set, the system will check if object exists and purge it ' .
         'before ingesting.  In all other cases, ingesting a batch that includes any ' .
         'existing objects would fail.  NOTE:  Objects would be purged at the point in time ' .
-        'when a batch is scanned for ingest, not when the actual ingest set is processed.'
+        'when a batch is scanned for ingest, not when the actual ingest set is processed.',
         'value' => 'optional',
       ),
       'content_models' => array(
