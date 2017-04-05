@@ -198,12 +198,13 @@ function drush_islandora_batch_scan_preprocess() {
 
   // Optionally purge object, if overwrite_existing and assign_pid are set -- and if that PID exists.
   if ($parameters['overwrite_existing'] && $parameters['assign_pid']) {
+    // This needs to delete any batch records that relate to this PID value (assign_pid).
+    module_load_include('inc', 'islandora_batch', 'includes/db');
+    islandora_batch_delete_object($parameters['assign_pid']);
+
+    // Also, delete the object itself.
     $object = islandora_object_load($parameters['assign_pid']);
     if (is_object($object)) {
-      // This will also need to delete any batch records that relate to this PID value (assign_pid).
-      module_load_include('inc', 'islandora_batch', 'includes/db');
-      islandora_batch_delete_object($object->id);
-
       $object->repository->purgeObject($object->id);
     }
   }
