@@ -114,7 +114,7 @@ abstract class IslandoraBatchPreprocessor {
    *   An id to use in the back-end (Fedora).
    */
   protected function getId(AbstractFedoraObject $object) {
-    if (isset($this->parameters['assign_pid'])) {
+    if (isset($this->parameters['assign_pid'])) { 
       return $this->parameters['assign_pid'];
     }
     // Command line argument overrides Collection Policy.
@@ -192,7 +192,12 @@ abstract class IslandoraBatchPreprocessor {
    */
   protected function addToDatabase(AbstractFedoraObject $object, array $resources = array(), $parent = NULL) {
     if (!isset($object->id)) {
-      $object->id = $this->getId($object);
+      if (get_class($object) == 'IslandoraBookBookBatchObject') {
+        $object->id = $this->getId($object);
+      }
+      else {
+        $object->id = $object->pagePID;
+      }
     }
 
     db_insert('islandora_batch_queue')

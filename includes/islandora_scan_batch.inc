@@ -520,10 +520,10 @@ EOXML;
    * Add collection and content model relationships.
    */
   public function addRelationships() {
-    $site = $this->preprocessorParameters['site'];
+    $site = isset($this->preprocessorParameters['site']) ? $this->preprocessorParameters['site'] : NULL;
     $collection = $this->preprocessorParameters['parent'];
     $predicate = $this->preprocessorParameters['parent_relationship_pred'];
-    $site_predicate = $this->preprocessorParameters['site_relationship_pred'];
+    $site_predicate = isset($this->preprocessorParameters['site_relationship_pred']) ? $this->preprocessorParameters['site_relationship_pred'] : NULL;
     $uri = $this->preprocessorParameters['parent_relationship_uri'];
 
     if ($site) {
