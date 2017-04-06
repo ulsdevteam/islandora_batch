@@ -192,7 +192,7 @@ abstract class IslandoraBatchPreprocessor {
    */
   protected function addToDatabase(AbstractFedoraObject $object, array $resources = array(), $parent = NULL) {
     if (!isset($object->id)) {
-      if (get_class($object) == 'IslandoraBookBookBatchObject') {
+      if (get_class($object) == 'IslandoraBookBookBatchObject' || !isset($object->pagePID)) {
         $object->id = $this->getId($object);
       }
       else {
