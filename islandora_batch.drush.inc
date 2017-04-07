@@ -59,8 +59,8 @@ function islandora_batch_drush_command() {
         'required' => TRUE,
       ),
       'assign_pid' => array(
-        'description' => 'The full PID to assign to the object. If this value ' .
-        'is provided, the namespace option is not used.',
+        'description' => 'The PID value (including namespace) to assign to the object. If this value ' .
+        'is provided, the namespace value is ignored.',
         'value' => 'optional',
       ),
       'overwrite_existing' => array(
@@ -95,13 +95,16 @@ function islandora_batch_drush_command() {
         'Defaults to namespace specified in Fedora configuration.',
         'value' => 'optional',
       ),
-      'site' => array(
-        'description' => 'The site to which the generated items should ' .
-        'be added.',
+      'relationship' => array(
+        'description' => 'An additional relationship to create.',
         'value' => 'optional',
       ),
-      'site_relationship_pred' => array(
-        'description' => 'The predicate of the relationship to the site. ',
+      'relationship_pred' => array(
+        'description' => 'The predicate of the relationship.',
+        'value' => 'optional',
+      ),
+      'relationship_namespace' => array(
+        'description' => 'Namespace of additional relationship.',
         'value' => 'optional',
       ),
       'zip_encoding' => array(
@@ -171,19 +174,12 @@ function drush_islandora_batch_scan_preprocess() {
   drupal_static_reset('islandora_get_tuque_connection');
   $connection = islandora_get_tuque_connection();
 
-  $parameters = array(
-    'type' => drush_get_option('type'),
-    'target' => DRUSH_VERSION >= 7 ? drush_get_option('scan_target') : drush_get_option('target'),
-    'parent' => drush_get_option('parent', variable_get('islandora_repository_pid', 'islandora:root')),
-    'parent_relationship_uri' => drush_get_option('parent_relationship_uri', 'info:fedora/fedora-system:def/relations-external#'),
-    'parent_relationship_pred' => drush_get_option('parent_relationship_pred', 'isMemberOfCollection'),
-    'assign_pid' => drush_get_option('assign_pid', ''),
-    'overwrite_existing' => drush_get_option('overwrite_existing', NULL),
-    'site' => drush_get_option('site', ''),
-    'site_relationship_pred' => drush_get_option('site_relationship_pred', ''),
-    'namespace' => drush_get_option('namespace'),
+  module_load_include('inc', 'islandora_batch', 'includes/common');
+  $base_parameters = islandora_batch_get_base_drush_parameters();
+  $islandora_batch_parameters = array(
     'zip_encoding' => drush_get_option('zip_encoding'),
   );
+  $parameters = array_merge($base_parameters, $islandora_batch_parameters);
 
   if ($content_models = drush_get_option('content_models', FALSE)) {
     $parameters['content_models'] = explode(',', $content_models);

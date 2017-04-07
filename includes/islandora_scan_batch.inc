@@ -520,14 +520,15 @@ EOXML;
    * Add collection and content model relationships.
    */
   public function addRelationships() {
-    $site = isset($this->preprocessorParameters['site']) ? $this->preprocessorParameters['site'] : NULL;
     $collection = $this->preprocessorParameters['parent'];
     $predicate = $this->preprocessorParameters['parent_relationship_pred'];
-    $site_predicate = isset($this->preprocessorParameters['site_relationship_pred']) ? $this->preprocessorParameters['site_relationship_pred'] : NULL;
     $uri = $this->preprocessorParameters['parent_relationship_uri'];
+    $relationship = isset($this->preprocessorParameters['relationship']) ? $this->preprocessorParameters['relationship'] : NULL;
+    $relationship_namespace = isset($this->preprocessorParameters['relationship_namespace']) ? $this->preprocessorParameters['relationship_namespace'] : NULL;
+    $relationship_predicate = isset($this->preprocessorParameters['relationship_pred']) ? $this->preprocessorParameters['relationship_pred'] : NULL;
 
-    if ($site) {
-      $this->relationships->add('http://digital.library.pitt.edu/ontology/relations#', $site_predicate, $site);
+    if ($relationship && $relationship_predicate && $relationship_namespace) {
+      $this->relationships->add($relationship_namespace, $relationship_predicate, $relationship);
     }
     $this->relationships->add($uri, $predicate, $collection);
     $this->addContentModelRelationships();
