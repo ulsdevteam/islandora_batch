@@ -523,14 +523,29 @@ EOXML;
     $collection = $this->preprocessorParameters['parent'];
     $predicate = $this->preprocessorParameters['parent_relationship_pred'];
     $uri = $this->preprocessorParameters['parent_relationship_uri'];
+
     $relationship = isset($this->preprocessorParameters['relationship']) ? $this->preprocessorParameters['relationship'] : NULL;
     $relationship_namespace = isset($this->preprocessorParameters['relationship_namespace']) ? $this->preprocessorParameters['relationship_namespace'] : NULL;
     $relationship_predicate = isset($this->preprocessorParameters['relationship_pred']) ? $this->preprocessorParameters['relationship_pred'] : NULL;
 
+    // support multiple collections by splitting on the comma
+    $collections = explode(",", $collection);
+    $relationships = explode(",", $relationship);
+
     if ($relationship && $relationship_predicate && $relationship_namespace) {
-      $this->relationships->add($relationship_namespace, $relationship_predicate, $relationship);
+      foreach ($relationships as $r) {
+        $r = trim($r);
+        if ($r) {
+          $this->relationships->add($relationship_namespace, $relationship_predicate, $r);
+        }
+      }
     }
-    $this->relationships->add($uri, $predicate, $collection);
+    foreach ($collections as $c) {
+      $c = trim($c);
+      if ($c) {
+        $this->relationships->add($uri, $predicate, $c);
+      }
+    }
     $this->addContentModelRelationships();
 
     $this->inheritXacmlPolicies();
