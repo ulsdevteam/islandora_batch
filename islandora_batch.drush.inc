@@ -54,6 +54,22 @@ function islandora_batch_drush_command() {
         "`--directory` option.",
         'required' => TRUE,
       ),
+      'target' => array(
+        'description' => 'The target to directory or zip file to scan.',
+        'required' => TRUE,
+      ),
+      'assign_pid' => array(
+        'description' => 'The PID value (including namespace) to assign to the object. If this value ' .
+        'is provided, the namespace value is ignored.',
+        'value' => 'optional',
+      ),
+      'overwrite_existing' => array(
+        'description' => 'If set, the system will check if object exists and purge it ' .
+        'before ingesting.  In all other cases, ingesting a batch that includes any ' .
+        'existing objects would fail.  NOTE:  Objects would be purged at the point in time ' .
+        'when a batch is scanned for ingest, not when the actual ingest set is processed.',
+        'value' => 'optional',
+      ),
       'content_models' => array(
         'description' => 'Supports one or multiple comma-separated content ' .
         'models which are all applied to each ingested object.',
@@ -77,6 +93,18 @@ function islandora_batch_drush_command() {
       'namespace' => array(
         'description' => 'Namespace of objects to create. ' .
         'Defaults to namespace specified in Fedora configuration.',
+        'value' => 'optional',
+      ),
+      'relationship' => array(
+        'description' => 'An additional relationship to create.',
+        'value' => 'optional',
+      ),
+      'relationship_pred' => array(
+        'description' => 'The predicate of the relationship.',
+        'value' => 'optional',
+      ),
+      'relationship_namespace' => array(
+        'description' => 'Namespace of additional relationship.',
         'value' => 'optional',
       ),
       'zip_encoding' => array(
@@ -146,15 +174,12 @@ function drush_islandora_batch_scan_preprocess() {
   drupal_static_reset('islandora_get_tuque_connection');
   $connection = islandora_get_tuque_connection();
 
-  $parameters = array(
-    'type' => drush_get_option('type'),
-    'target' => DRUSH_VERSION >= 7 ? drush_get_option('scan_target') : drush_get_option('target'),
-    'parent' => drush_get_option('parent', variable_get('islandora_repository_pid', 'islandora:root')),
-    'parent_relationship_uri' => drush_get_option('parent_relationship_uri', 'info:fedora/fedora-system:def/relations-external#'),
-    'parent_relationship_pred' => drush_get_option('parent_relationship_pred', 'isMemberOfCollection'),
-    'namespace' => drush_get_option('namespace'),
+  module_load_include('inc', 'islandora_batch', 'includes/common');
+  $base_parameters = islandora_batch_get_base_drush_parameters();
+  $islandora_batch_parameters = array(
     'zip_encoding' => drush_get_option('zip_encoding'),
   );
+  $parameters = array_merge($base_parameters, $islandora_batch_parameters);
 
   if ($content_models = drush_get_option('content_models', FALSE)) {
     $parameters['content_models'] = explode(',', $content_models);
@@ -166,6 +191,19 @@ function drush_islandora_batch_scan_preprocess() {
   // Could use a drush_multiple_choice() or whatever to get the list of
   // content models, if none were provided?
   $preprocessor = new IslandoraScanBatch($connection, $parameters);
+
+  // Optionally purge object, if overwrite_existing and assign_pid are set -- and if that PID exists.
+  if ($parameters['overwrite_existing'] && $parameters['assign_pid']) {
+    // This needs to delete any batch records that relate to this PID value (assign_pid).
+    module_load_include('inc', 'islandora_batch', 'includes/db');
+    islandora_batch_delete_object($parameters['assign_pid']);
+
+    // Also, delete the object itself.
+    $object = islandora_object_load($parameters['assign_pid']);
+    if (is_object($object)) {
+      $object->repository->purgeObject($object->id);
+    }
+  }
 
   // Pass the preprocessor off to run.
   $preprocessed = islandora_batch_handle_preprocessor($preprocessor);
