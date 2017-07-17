@@ -188,24 +188,32 @@ class IslandoraScanBatch extends IslandoraBatchPreprocessor {
       $object->addRelationships();
       $this->addToDatabase($object, $object->getResources(), $parent);
       $to_return[] = $object;
-      $children = $object->getChildren($this->connection);
-      $child_count = count($children);
-      if ($child_count > 0) {
-        if (isset($this->parameters['namespace'])) {
-          $namespace = $this->parameters['namespace'];
+      $assign_pid = $this->parameters['assign_pid'];
+      if ($assign_pid) {
+        foreach ($object->getChildren($this->connection) as $child) {
+          $to_return = array_merge($to_return, $this->preprocessChildren($child, $object->id));
         }
-        else {
-          $namespace = $this->determineNamespace($object);
-        }
-        $children_ids = (array) $this->connection->repository->getNextIdentifier($namespace, NULL, $child_count);
-        foreach ($children as $child) {
-          $pid = array_shift($children_ids);
-          if ($pid !== NULL) {
-            $child->id = $pid;
-            $this->preprocessChildren($child, $object->id);
+      }
+      else {
+        $children = $object->getChildren($this->connection);
+        $child_count = count($children);
+        if ($child_count > 0) {
+          if (isset($this->parameters['namespace'])) {
+            $namespace = $this->parameters['namespace'];
           }
           else {
-            throw new Exception(t('No PID was available to allocate for object.'));
+            $namespace = $this->determineNamespace($object);
+          }
+          $children_ids = (array) $this->connection->repository->getNextIdentifier($namespace, NULL, $child_count);
+          foreach ($children as $child) {
+            $pid = array_shift($children_ids);
+            if ($pid !== NULL) {
+              $child->id = $pid;
+              $this->preprocessChildren($child, $object->id);
+            }
+            else {
+              throw new Exception(t('No PID was available to allocate for object.'));
+            }
           }
         }
       }
