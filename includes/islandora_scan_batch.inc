@@ -188,7 +188,7 @@ class IslandoraScanBatch extends IslandoraBatchPreprocessor {
       $object->addRelationships();
       $this->addToDatabase($object, $object->getResources(), $parent);
       $to_return[] = $object;
-      $assign_pid = $this->parameters['assign_pid'];
+      $assign_pid = (isset($this->parameters['assign_pid'])) ? (array) $this->parameters['assign_pid'] : FALSE;
       if ($assign_pid) {
         foreach ($object->getChildren($this->connection) as $child) {
           $to_return = array_merge($to_return, $this->preprocessChildren($child, $object->id));
