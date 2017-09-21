@@ -200,7 +200,7 @@ abstract class IslandoraBatchPreprocessor {
         $object->id = $this->getId($object);
       }
       else {
-        $object->id = $object->pagePID;
+        $object->id = (isset($object->pagePID)) ? $object->pagePID : $this->getId($object);
       }
     }
 
