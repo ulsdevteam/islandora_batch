@@ -262,6 +262,8 @@
             <dc:type>Text</dc:type>
         </xsl:if>
     </xsl:template>
+<!-- REMOVING THE POPULATION OF dc.format -->
+<!--
     <xsl:template match="mods:physicalDescription">
         <xsl:for-each select="mods:extent | mods:form | mods:internetMediaType">
             <dc:format>
@@ -269,6 +271,7 @@
             </dc:format>
         </xsl:for-each>
     </xsl:template>
+-->
     <xsl:template match="mods:identifier">
         <dc:identifier>
             <xsl:variable name="type"
