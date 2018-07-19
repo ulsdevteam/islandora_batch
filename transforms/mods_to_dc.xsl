@@ -1,29 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?> <xsl:stylesheet version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:mods="http://www.loc.gov/mods/v3"
     xmlns:copyrightMD="http://www.cdlib.org/inside/diglib/copyrightMD"
     exclude-result-prefixes="mods copyrightMD" xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:srw_dc="info:srw/schema/1/dc-schema"
     xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <!--
-	Version 1.5 2015-03-05 tmee@loc.gov
+
+    <!-- 
+	Version 1.5		2015-03-05 tmee@loc.gov
     				Typo mods:provence changed to mods:province
-	Version 1.4 2015-01-30 schema location change:
+
+	Version 1.4		2015-01-30 schema location change: 
     				http://www.loc.gov/standards/sru/recordSchemas/dc-schema.xsd
-	Version 1.3 2013-12-09 tmee@loc.gov
+
+	Version 1.3		2013-12-09 tmee@loc.gov
 	Fixed date transformation for dates without start/end points
 	
-	Version 1.2 2012-08-12 WS
+	Version 1.2		2012-08-12 WS 
 	Upgraded to MODS 3.4
 	
 	Revision 1.1	2007-05-18 tmee@loc.gov
 	Added modsCollection conversion to DC SRU
 	Updated introductory documentation
 	
-	Version 1.0 2007-05-04 tmee@loc.gov
+	Version 1.0		2007-05-04 tmee@loc.gov
 	
-	This stylesheet transforms MODS version 3.4 records and collections of records to simple Dublin Core (DC) records,
-	based on the Library of Congress' MODS to simple DC mapping <http://www.loc.gov/standards/mods/mods-dcsimple.html>
+	This stylesheet transforms MODS version 3.4 records and collections of records to simple Dublin Core (DC) records, 
+	based on the Library of Congress' MODS to simple DC mapping <http://www.loc.gov/standards/mods/mods-dcsimple.html> 
 			
 	The stylesheet will transform a collection of MODS 3.4 records into simple Dublin Core (DC)
 	as expressed by the SRU DC schema <http://www.loc.gov/standards/sru/dc-schema.xsd>
@@ -31,19 +35,23 @@
 	The stylesheet will transform a single MODS 3.4 record into simple Dublin Core (DC)
 	as expressed by the OAI DC schema <http://www.openarchives.org/OAI/2.0/oai_dc.xsd>
 			
-	Because MODS is more granular than DC, transforming a given MODS element or subelement to a DC element frequently results in less precise tagging,
-	and local customizations of the stylesheet may be necessary to achieve desired results.
+	Because MODS is more granular than DC, transforming a given MODS element or subelement to a DC element frequently results in less precise tagging, 
+	and local customizations of the stylesheet may be necessary to achieve desired results. 
 	
-	This stylesheet makes the following decisions in its interpretation of the MODS to simple DC mapping:
+	This stylesheet makes the following decisions in its interpretation of the MODS to simple DC mapping: 
 		
 	When the roleTerm value associated with a name is creator, then name maps to dc:creator
 	When there is no roleTerm value associated with name, or the roleTerm value associated with name is a value other than creator, then name maps to dc:contributor
 	Start and end dates are presented as span dates in dc:date and in dc:coverage
 	When the first subelement in a subject wrapper is topic, subject subelements are strung together in dc:subject with hyphens separating them
 	Some subject subelements, i.e., geographic, temporal, hierarchicalGeographic, and cartographics, are also parsed into dc:coverage
-	The subject subelement geographicCode is dropped in the transform -->
-    <!-- Pitt updates to core stylesheet are commented/signed by MRB -->
+	The subject subelement geographicCode is dropped in the transform
+
+-->
+    <!--    Pitt updates to core stylesheet are commented/signed by MRB -->
+
     <xsl:output method="xml" indent="yes"/>
+
     <xsl:template match="/">
         <xsl:choose>
             <!-- WS: updated schema location -->
@@ -69,6 +77,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template match="mods:titleInfo">
         <dc:title>
             <xsl:value-of select="mods:nonSort"/>
@@ -90,6 +99,7 @@
             </xsl:if>
         </dc:title>
     </xsl:template>
+
     <xsl:template match="mods:name">
         <xsl:choose>
             <xsl:when
@@ -105,9 +115,12 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
+
     <!--MRB: Heavily modified to handle dc.subject and dc.coverage in a more consistent way. -->
     <xsl:template
         match="mods:subject[mods:topic | mods:name | mods:titleInfo | mods:name | mods:occupation | mods:geographic | mods:hierarchicalGeographic | mods:cartographics | mods:temporal] ">
+
         <xsl:for-each select="mods:titleInfo">
             <dc:subject>
                 <xsl:value-of select="mods:nonSort"/>
@@ -129,16 +142,20 @@
                 </xsl:if>
             </dc:subject>
         </xsl:for-each>
+
         <xsl:for-each select="mods:name">
             <dc:subject>
                 <xsl:call-template name="name"/>
             </dc:subject>
         </xsl:for-each>
+
+
         <xsl:for-each select="mods:geographic">
             <dc:coverage>
                 <xsl:value-of select="."/>
             </dc:coverage>
         </xsl:for-each>
+
         <xsl:for-each select="mods:hierarchicalGeographic">
             <dc:coverage>
                 <xsl:for-each
@@ -148,6 +165,7 @@
                 </xsl:for-each>
             </dc:coverage>
         </xsl:for-each>
+
         <xsl:if test="*[local-name()='topic']">
             <dc:subject>
                 <xsl:for-each
@@ -158,27 +176,31 @@
             </dc:subject>
         </xsl:if>
     </xsl:template>
+
     <xsl:template match="mods:abstract | mods:tableOfContents | mods:note">
         <dc:description>
             <xsl:value-of select="."/>
         </dc:description>
     </xsl:template>
+
     <xsl:template match="mods:originInfo">
         <xsl:apply-templates select="*[@point='start']"/>
         <xsl:for-each
-            select="mods:dateIssued[@point!='start' and @point!='end'] |mods:dateCreated[@point!='start' and @point!='end'] | mods:dateCaptured[@point!='start' and @point!='end'] | mods:dateOther[@point!='start' and 
-@point!='end']">
+            select="mods:dateIssued[@point!='start' and @point!='end'] |mods:dateCreated[@point!='start' and @point!='end'] | mods:dateCaptured[@point!='start' and @point!='end'] | mods:dateOther[@point!='start' and @point!='end']">
             <dc:date>
                 <xsl:value-of select="."/>
             </dc:date>
         </xsl:for-each>
         <xsl:apply-templates select="*[not(@point)]"/>
+
         <xsl:for-each select="mods:publisher">
             <dc:publisher>
                 <xsl:value-of select="."/>
             </dc:publisher>
         </xsl:for-each>
+
     </xsl:template>
+
     <xsl:template match="mods:dateIssued | mods:dateCreated | mods:dateCaptured">
         <dc:date>
             <xsl:choose>
@@ -195,6 +217,7 @@
             </xsl:choose>
         </dc:date>
     </xsl:template>
+
     <xsl:template
         match="mods:dateIssued[@point='start'] | mods:dateCreated[@point='start'] | mods:dateCaptured[@point='start'] | mods:dateOther[@point='start'] ">
         <xsl:variable name="dateName" select="local-name()"/>
@@ -203,10 +226,12 @@
                 select="../*[local-name()=$dateName][@point='end']"/>
         </dc:date>
     </xsl:template>
-    <xsl:template match="mods:temporal[@point='start'] ">
+
+    <xsl:template match="mods:temporal[@point='start']  ">
         <xsl:value-of select="."/>-<xsl:value-of select="../mods:temporal[@point='end']"/>
     </xsl:template>
-    <xsl:template match="mods:temporal[@point!='start' and @point!='end'] ">
+
+    <xsl:template match="mods:temporal[@point!='start' and @point!='end']  ">
         <xsl:value-of select="."/>
     </xsl:template>
     <xsl:template match="mods:genre">
@@ -224,6 +249,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template match="mods:typeOfResource">
         <xsl:if test="@collection='yes'">
             <dc:type>Collection</dc:type>
@@ -262,16 +288,16 @@
             <dc:type>Text</dc:type>
         </xsl:if>
     </xsl:template>
-<!-- REMOVING THE POPULATION OF dc.format -->
-<!--
-    <xsl:template match="mods:physicalDescription">
+
+<!--MRB removed because data was not in sync for DPLA/PA Digital Harvest -->
+<!--    <xsl:template match="mods:physicalDescription">
         <xsl:for-each select="mods:extent | mods:form | mods:internetMediaType">
             <dc:format>
                 <xsl:value-of select="."/>
             </dc:format>
         </xsl:for-each>
-    </xsl:template>
--->
+    </xsl:template>-->
+
     <xsl:template match="mods:identifier">
         <dc:identifier>
             <xsl:variable name="type"
@@ -293,6 +319,7 @@
             </xsl:choose>
         </dc:identifier>
     </xsl:template>
+
     <xsl:template match="mods:location">
         <xsl:for-each select="mods:url">
             <dc:identifier>
@@ -300,11 +327,13 @@
             </dc:identifier>
         </xsl:for-each>
     </xsl:template>
+
     <xsl:template match="mods:language">
         <dc:language>
             <xsl:value-of select="child::*"/>
         </dc:language>
     </xsl:template>
+
     <xsl:template
         match="mods:relatedItem[mods:titleInfo | mods:name | mods:identifier | mods:location]">
         <xsl:choose>
@@ -333,23 +362,21 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
+
     <!-- MRB - Access conditions updated to include rightsstatements.org statements -->
     <xsl:template match="mods:accessCondition">
         <xsl:choose>
             <xsl:when
-                test="copyrightMD:copyright[@copyright.status='pd'] | copyrightMD:copyright[@copyright.status='pd_expired'] | copyrightMD:copyright[@copyright.status='pd_usfed'] | 
-copyrightMD:copyright[@copyright.status='pd_holder']">
+                test="copyrightMD:copyright[@copyright.status='pd'] | copyrightMD:copyright[@copyright.status='pd_expired'] | copyrightMD:copyright[@copyright.status='pd_usfed'] | copyrightMD:copyright[@copyright.status='pd_holder']">
                 <dc:rights>
-                    <xsl:text>No Copyright - United States. The organization that has made the Item available believes that the Item is in the Public Domain under the laws of the United States, but a determination was not made as 
-to its copyright status under the copyright laws of other countries. The Item may not be in the Public Domain under the laws of other countries. Please refer to the organization that has made the Item available for more 
-information.</xsl:text>
+                    <xsl:text>No Copyright - United States. The organization that has made the Item available believes that the Item is in the Public Domain under the laws of the United States, but a determination was not made as to its copyright status under the copyright laws of other countries. The Item may not be in the Public Domain under the laws of other countries. Please refer to the organization that has made the Item available for more information.</xsl:text>
                 </dc:rights>
                 <dc:rights>http://rightsstatements.org/vocab/NoC-US/1.0/</dc:rights>
             </xsl:when>
             <xsl:when test="copyrightMD:copyright[@copyright.status='copyrighted']">
                 <dc:rights>
-                    <xsl:text>In Copyright. This Item is protected by copyright and/or related rights. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to 
-your use. For other uses you need to obtain permission from the rights-holder(s).</xsl:text>
+                    <xsl:text>In Copyright. This Item is protected by copyright and/or related rights. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use. For other uses you need to obtain permission from the rights-holder(s).</xsl:text>
                     <xsl:if test="copyrightMD:copyright/copyrightMD:rights.holder/copyrightMD:name">
                         <xsl:text>. Rights Holder: </xsl:text>
                         <xsl:value-of
@@ -367,20 +394,19 @@ your use. For other uses you need to obtain permission from the rights-holder(s)
             </xsl:when>
             <xsl:when test="copyrightMD:copyright[@copyright.status='unknown']">
                 <dc:rights>
-                    <xsl:text>Copyright Not Evaluated. The copyright and related rights status of this Item has not been evaluated. Please refer to the organization that has made the Item available for more information. You are 
-free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use.</xsl:text>
+                    <xsl:text>Copyright Undetermined. The copyright and related rights status of this Item has been reviewed by the organization that has made the Item available, but the organization was unable to make a conclusive determination as to the copyright status of the Item. Please refer to the organization that has made the Item available for more information. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use.</xsl:text>
                 </dc:rights>
-                <dc:rights>http://rightsstatements.org/vocab/CNE/1.0/</dc:rights>
+                <dc:rights>http://rightsstatements.org/vocab/UND/1.0/</dc:rights>
             </xsl:when>
             <xsl:otherwise>
                 <dc:rights>
-                    <xsl:text>Copyright Not Evaluated. The copyright and related rights status of this Item has not been evaluated. Please refer to the organization that has made the Item available for more information. You are 
-free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use.</xsl:text>
+                    <xsl:text>Copyright Undetermined. The copyright and related rights status of this Item has been reviewed by the organization that has made the Item available, but the organization was unable to make a conclusive determination as to the copyright status of the Item. Please refer to the organization that has made the Item available for more information. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use.</xsl:text>
                 </dc:rights>
-                <dc:rights>http://rightsstatements.org/vocab/CNE/1.0/</dc:rights>
+                <dc:rights>http://rightsstatements.org/vocab/UND/1.0/</dc:rights>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template name="name">
         <xsl:variable name="name">
             <xsl:for-each select="mods:namePart[not(@type)]">
@@ -410,6 +436,9 @@ free to use this Item in any way that is permitted by the copyright and related 
         </xsl:variable>
         <xsl:value-of select="normalize-space($name)"/>
     </xsl:template>
+
     <!-- suppress all else:-->
-    <xsl:template match="*"/> 
+    <xsl:template match="*"/>
+
+
 </xsl:stylesheet>
