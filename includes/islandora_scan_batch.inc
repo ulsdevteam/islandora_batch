@@ -320,7 +320,12 @@ class IslandoraScanBatchObject extends IslandoraBatchObject {
     // received from the DC-COMPOSITE.
     foreach ($dsids as $ds => $info) {
       if (in_array($mimetype, $info['mime'])) {
-        $dsid = $ds;
+        if ((strstr($name, '.mp4') <> '') || (strstr($name, '.MP4') <> '')) {
+          $dsid = 'OBJ';
+        }
+        else {
+          $dsid = $ds;
+        }
         break;
       }
     }
@@ -377,6 +382,10 @@ class IslandoraScanBatchObject extends IslandoraBatchObject {
     $input->loadXML($info['input']);
 
     $processor = new XSLTProcessor();
+    if (isset($info['pid'])) {
+      $processor->setParameter( '', 'pid', $pid);
+    }
+
     $processor->importStylesheet($xsl);
 
     if (isset($info['php_functions'])) {
@@ -525,6 +534,7 @@ EOXML;
             array(
               'xsl' => $this->modsToDcTransform,
               'input' => $mods_content,
+              'pid' => $this->id,
             )
           );
         }
