@@ -309,7 +309,7 @@
 <!--            <xsl:variable name="type"
                 select="translate(@type,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')"/>
             <xsl:choose>
-                <!-- 2.0: added identifier type attribute to output, if it is present-->
+                --><!-- 2.0: added identifier type attribute to output, if it is present-->
 <!--                <xsl:when test="contains(.,':')">
                     <xsl:value-of select="."/>
                 </xsl:when>
