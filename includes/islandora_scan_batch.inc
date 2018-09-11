@@ -383,7 +383,7 @@ class IslandoraScanBatchObject extends IslandoraBatchObject {
 
     $processor = new XSLTProcessor();
     if (isset($info['pid'])) {
-      $processor->setParameter( '', 'pid', $pid);
+      $processor->setParameter( '', 'pid', $info['pid']);
     }
 
     $processor->importStylesheet($xsl);
