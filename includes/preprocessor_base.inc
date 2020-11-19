@@ -204,6 +204,17 @@ abstract class IslandoraBatchPreprocessor {
       }
     }
 
+
+db_delete('islandora_batch_queue')
+  ->condition('id', $object->id)
+  ->execute();
+
+db_delete('islandora_batch_state')
+  ->condition('id', $object->id)
+  ->execute();
+
+
+
     db_insert('islandora_batch_queue')
       ->fields(array('id', 'parent', 'data', 'sid'))
       // Could queue up multiple in a static cache, to dump all together?
